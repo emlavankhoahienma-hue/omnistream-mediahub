@@ -75,7 +75,7 @@ public struct LiquidBackground: View {
     private var metalFluidAurora: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            let p = phase
+            let p = CGFloat(phase)
 
             ZStack {
                 // Luồng ánh sáng Cyan / Teal ở góc trên
