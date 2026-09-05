@@ -111,7 +111,7 @@ public struct MediaItemRow: View {
                 }
             }
             .padding(12)
-            .liquidGlass(cornerRadius: 16, borderOpacity: 0.25)
+            .glassRow(cornerRadius: 16)
         }
         .buttonStyle(PlainButtonStyle())
     }

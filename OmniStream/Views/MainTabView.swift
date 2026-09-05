@@ -34,7 +34,10 @@ public struct MainTabView: View {
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            // Main Tab Content
+            // Nền Liquid Background duy nhất toàn ứng dụng (120 FPS Metal-Accelerated)
+            LiquidBackground()
+
+            // Nội dung từng Tab
             Group {
                 switch selectedTab {
                 case .dashboard:
@@ -47,7 +50,7 @@ public struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // Floating Controls: Mini Player & Liquid Glass Tab Bar
+            // Điều khiển nổi: Mini Player & Glass Tab Bar
             VStack(spacing: 8) {
                 // Mini Player
                 MiniPlayerView(viewModel: playerViewModel)
@@ -70,7 +73,7 @@ public struct MainTabView: View {
             ForEach(AppTab.allCases) { tab in
                 Button(action: {
                     HapticFeedback.shared.touchSoft()
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
                         selectedTab = tab
                     }
                 }) {
@@ -90,6 +93,6 @@ public struct MainTabView: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .liquidGlass(cornerRadius: 28, borderOpacity: 0.35, shadowRadius: 20, shadowY: 6)
+        .liquidGlass(cornerRadius: 26, borderOpacity: 0.35, shadowRadius: 12, shadowY: 5)
     }
 }

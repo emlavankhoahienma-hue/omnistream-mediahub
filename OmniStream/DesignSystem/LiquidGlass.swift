@@ -1,31 +1,28 @@
 import SwiftUI
 
-// MARK: - Liquid Glass Design System
-/// Liquid Glass là phong cách thiết kế Glassmorphism hiện đại tối ưu cho iOS 16 - 18+.
-/// Kết hợp Ultra-thin Material, viền phản quang vi mô (specular border gradient),
-/// đổ bóng nhiều lớp (layered soft shadows) và độ tương phản cao trong cả Light và Dark mode.
+// MARK: - Liquid Glass Design System (High-Performance Edition)
+/// Hệ thống hiệu ứng kính lỏng (Liquid Glass) tối ưu hóa cho ProMotion 120Hz.
+/// Sử dụng Ultra-Thin Material kết hợp ánh sáng khúc xạ vi mô và đường viền specular,
+/// không gây hiện tượng quá tải bộ nhớ đồ họa hay đơ cảm ứng.
 
 public struct LiquidGlassModifier: ViewModifier {
     public var cornerRadius: CGFloat
     public var borderOpacity: Double
     public var shadowRadius: CGFloat
     public var shadowY: CGFloat
-    public var backgroundOpacity: Double
 
     @Environment(\.colorScheme) private var colorScheme
 
     public init(
-        cornerRadius: CGFloat = 22,
-        borderOpacity: Double = 0.35,
-        shadowRadius: CGFloat = 16,
-        shadowY: CGFloat = 8,
-        backgroundOpacity: Double = 0.65
+        cornerRadius: CGFloat = 20,
+        borderOpacity: Double = 0.3,
+        shadowRadius: CGFloat = 10,
+        shadowY: CGFloat = 5
     ) {
         self.cornerRadius = cornerRadius
         self.borderOpacity = borderOpacity
         self.shadowRadius = shadowRadius
         self.shadowY = shadowY
-        self.backgroundOpacity = backgroundOpacity
     }
 
     public func body(content: Content) -> some View {
@@ -33,46 +30,93 @@ public struct LiquidGlassModifier: ViewModifier {
             .background {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(.ultraThinMaterial)
-                    .opacity(backgroundOpacity)
             }
             .overlay {
-                // Viền phản quang vi mô tạo cảm giác thuỷ tinh cong
+                // Hiệu ứng ánh sáng khúc xạ bề mặt (Top-down Specular Reflection)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .white.opacity(0.08), location: 0.0),
+                                .init(color: .clear, location: 0.35)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            }
+            .overlay {
+                // Viền sáng phản quang vi mô (Micro Specular Rim)
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .strokeBorder(
                         LinearGradient(
                             stops: [
-                                .init(color: .white.opacity(borderOpacity), location: 0.0),
-                                .init(color: .white.opacity(borderOpacity * 0.4), location: 0.3),
-                                .init(color: .cyan.opacity(borderOpacity * 0.25), location: 0.7),
-                                .init(color: .white.opacity(borderOpacity * 0.1), location: 1.0)
+                                .init(color: .white.opacity(borderOpacity * 1.2), location: 0.0),
+                                .init(color: .white.opacity(borderOpacity * 0.3), location: 0.25),
+                                .init(color: .cyan.opacity(borderOpacity * 0.4), location: 0.6),
+                                .init(color: .white.opacity(borderOpacity * 0.08), location: 1.0)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 1.2
+                        lineWidth: 1.0
                     )
             }
-            // Đổ bóng 2 tầng: tầng bóng nông để tạo độ nổi, tầng bóng sâu tạo độ mềm
             .shadow(
-                color: (colorScheme == .dark ? Color.black.opacity(0.45) : Color.blue.opacity(0.08)),
+                color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.06),
                 radius: shadowRadius,
                 x: 0,
                 y: shadowY
             )
+    }
+}
+
+// MARK: - Optimized Row Glass for Smooth 120Hz Scroll Lists
+public struct GlassRowModifier: ViewModifier {
+    public var cornerRadius: CGFloat
+
+    @Environment(\.colorScheme) private var colorScheme
+
+    public init(cornerRadius: CGFloat = 16) {
+        self.cornerRadius = cornerRadius
+    }
+
+    public func body(content: Content) -> some View {
+        content
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(.ultraThinMaterial)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                .white.opacity(0.25),
+                                .white.opacity(0.05)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.8
+                    )
+            }
             .shadow(
-                color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.04),
-                radius: 4,
+                color: Color.black.opacity(colorScheme == .dark ? 0.15 : 0.04),
+                radius: 6,
                 x: 0,
-                y: 2
+                y: 3
             )
     }
 }
 
+// MARK: - Glass Capsule Modifier
 public struct GlassCapsuleModifier: ViewModifier {
     public var borderOpacity: Double
+
     @Environment(\.colorScheme) private var colorScheme
 
-    public init(borderOpacity: Double = 0.3) {
+    public init(borderOpacity: Double = 0.25) {
         self.borderOpacity = borderOpacity
     }
 
@@ -88,45 +132,46 @@ public struct GlassCapsuleModifier: ViewModifier {
                         LinearGradient(
                             colors: [
                                 .white.opacity(borderOpacity),
-                                .white.opacity(borderOpacity * 0.2)
+                                .white.opacity(borderOpacity * 0.15)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 1.0
+                        lineWidth: 0.8
                     )
             }
-            .shadow(color: Color.black.opacity(0.12), radius: 8, x: 0, y: 4)
+            .shadow(
+                color: Color.black.opacity(colorScheme == .dark ? 0.12 : 0.03),
+                radius: 4,
+                x: 0,
+                y: 2
+            )
     }
 }
 
 public extension View {
-    /// Áp dụng hiệu ứng Liquid Glass với bo góc tuỳ chỉnh
+    /// Áp dụng hiệu ứng Liquid Glass cao cấp cho Thẻ chính
     func liquidGlass(
-        cornerRadius: CGFloat = 22,
-        borderOpacity: Double = 0.35,
-        shadowRadius: CGFloat = 16,
-        shadowY: CGFloat = 8,
-        backgroundOpacity: Double = 0.75
+        cornerRadius: CGFloat = 20,
+        borderOpacity: Double = 0.3,
+        shadowRadius: CGFloat = 10,
+        shadowY: CGFloat = 5
     ) -> some View {
         modifier(LiquidGlassModifier(
             cornerRadius: cornerRadius,
             borderOpacity: borderOpacity,
             shadowRadius: shadowRadius,
-            shadowY: shadowY,
-            backgroundOpacity: backgroundOpacity
+            shadowY: shadowY
         ))
     }
 
-    /// Áp dụng kiểu dáng viên nang kính vi mô cho Chip, Tag hoặc Toolbar items
-    func glassCapsule(borderOpacity: Double = 0.3) -> some View {
-        modifier(GlassCapsuleModifier(borderOpacity: borderOpacity))
+    /// Áp dụng hiệu ứng Kính siêu mượt cho danh sách cuộn (120 FPS không giật lag)
+    func glassRow(cornerRadius: CGFloat = 16) -> some View {
+        modifier(GlassRowModifier(cornerRadius: cornerRadius))
     }
 
-    /// Thích ứng an toàn cho Dynamic Island (iPhone 14 Pro - 16 Pro Max) và Tai thỏ (iPhone X - 13)
-    func adaptiveGlassPadding() -> some View {
-        self.safeAreaInset(edge: .top) {
-            Color.clear.frame(height: 4)
-        }
+    /// Áp dụng kiểu dáng viên nang kính cho Chip, Tag hoặc Toolbar items
+    func glassCapsule(borderOpacity: Double = 0.25) -> some View {
+        modifier(GlassCapsuleModifier(borderOpacity: borderOpacity))
     }
 }

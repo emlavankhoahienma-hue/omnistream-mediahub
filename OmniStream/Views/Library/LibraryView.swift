@@ -21,34 +21,30 @@ public struct LibraryView: View {
     public init() {}
 
     public var body: some View {
-        ZStack {
-            LiquidBackground()
+        VStack(spacing: 16) {
+            // Header Bar
+            headerBar
+                .padding(.horizontal, 18)
+                .padding(.top, 10)
 
-            VStack(spacing: 16) {
-                // Header Bar
-                headerBar
-                    .padding(.horizontal, 18)
-                    .padding(.top, 10)
+            // Search Bar
+            GlassTextField("Tìm kiếm tệp media...", text: $viewModel.searchQuery, icon: "magnifyingglass")
+                .padding(.horizontal, 18)
 
-                // Search Bar
-                GlassTextField("Tìm kiếm tệp media...", text: $viewModel.searchQuery, icon: "magnifyingglass")
-                    .padding(.horizontal, 18)
+            // Tag Filter Pills
+            TagFilterBar(tags: viewModel.tags, selectedTagId: $viewModel.selectedTagId)
+                .padding(.horizontal, 18)
 
-                // Tag Filter Pills
-                TagFilterBar(tags: viewModel.tags, selectedTagId: $viewModel.selectedTagId)
-                    .padding(.horizontal, 18)
-
-                // Danh sách tệp
-                if viewModel.isLoading {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                } else if viewModel.filteredItems.isEmpty {
-                    emptyLibraryPlaceholder
-                    Spacer()
-                } else {
-                    mediaList
-                }
+            // Danh sách tệp
+            if viewModel.isLoading {
+                Spacer()
+                ProgressView()
+                Spacer()
+            } else if viewModel.filteredItems.isEmpty {
+                emptyLibraryPlaceholder
+                Spacer()
+            } else {
+                mediaList
             }
         }
         .sheet(item: $viewModel.selectedItemForDetail) { item in

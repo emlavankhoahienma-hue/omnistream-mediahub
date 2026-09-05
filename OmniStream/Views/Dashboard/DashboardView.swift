@@ -7,27 +7,23 @@ public struct DashboardView: View {
     public init() {}
 
     public var body: some View {
-        ZStack {
-            LiquidBackground()
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 20) {
+                // Header Bar
+                headerBar
+                    .padding(.top, 10)
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 20) {
-                    // Header Bar
-                    headerBar
-                        .padding(.top, 10)
+                // Card nhập URL & phát hiện clipboard
+                URLInputCardView(viewModel: viewModel)
 
-                    // Card nhập URL & phát hiện clipboard
-                    URLInputCardView(viewModel: viewModel)
+                // Danh sách tác vụ đang tải
+                activeTasksSection
 
-                    // Danh sách tác vụ đang tải
-                    activeTasksSection
-
-                    // Khoảng trống dưới đáy để không bị che bởi tab bar và mini player
-                    Spacer()
-                        .frame(height: 120)
-                }
-                .padding(.horizontal, 18)
+                // Khoảng trống dưới đáy để không bị che bởi tab bar và mini player
+                Spacer()
+                    .frame(height: 120)
             }
+            .padding(.horizontal, 18)
         }
         .sheet(isPresented: $viewModel.showPreviewSheet) {
             if let preview = viewModel.previewMetadata {

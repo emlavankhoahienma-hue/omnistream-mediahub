@@ -9,55 +9,51 @@ public struct ConverterView: View {
     public init() {}
 
     public var body: some View {
-        ZStack {
-            LiquidBackground()
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 20) {
+                // Header Bar
+                headerBar
+                    .padding(.top, 10)
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 20) {
-                    // Header Bar
-                    headerBar
-                        .padding(.top, 10)
+                // Mode Selector
+                modeSelector
 
-                    // Mode Selector
-                    modeSelector
+                // Media Source Selection Card
+                sourceMediaCard
 
-                    // Media Source Selection Card
-                    sourceMediaCard
-
-                    // Configuration Card
-                    if viewModel.selectedMode == .audio {
-                        AudioExtractionCard(
-                            selectedFormat: $viewModel.selectedAudioFormat,
-                            selectedBitrate: $viewModel.selectedAudioBitrate
-                        )
-                    } else {
-                        VideoCompressionCard(
-                            selectedCodec: $viewModel.selectedVideoCodec,
-                            selectedQuality: $viewModel.selectedVideoQuality
-                        )
-                    }
-
-                    // Tiến trình đang xử lý
-                    if viewModel.isTranscoding {
-                        transcodingProgressCard
-                    } else {
-                        // Nút hành động chính
-                        GlassButton(
-                            viewModel.selectedMode == .audio ? "Bắt Đầu Tách Âm Thanh" : "Bắt Đầu Nén Video",
-                            icon: "bolt.fill",
-                            style: .vibrantGradient
-                        ) {
-                            viewModel.startConversion()
-                        }
-                        .disabled(viewModel.selectedMediaItem == nil)
-                        .opacity(viewModel.selectedMediaItem == nil ? 0.6 : 1.0)
-                    }
-
-                    Spacer()
-                        .frame(height: 120)
+                // Configuration Card
+                if viewModel.selectedMode == .audio {
+                    AudioExtractionCard(
+                        selectedFormat: $viewModel.selectedAudioFormat,
+                        selectedBitrate: $viewModel.selectedAudioBitrate
+                    )
+                } else {
+                    VideoCompressionCard(
+                        selectedCodec: $viewModel.selectedVideoCodec,
+                        selectedQuality: $viewModel.selectedVideoQuality
+                    )
                 }
-                .padding(.horizontal, 18)
+
+                // Tiến trình đang xử lý
+                if viewModel.isTranscoding {
+                    transcodingProgressCard
+                } else {
+                    // Nút hành động chính
+                    GlassButton(
+                        viewModel.selectedMode == .audio ? "Bắt Đầu Tách Âm Thanh" : "Bắt Đầu Nén Video",
+                        icon: "bolt.fill",
+                        style: .vibrantGradient
+                    ) {
+                        viewModel.startConversion()
+                    }
+                    .disabled(viewModel.selectedMediaItem == nil)
+                    .opacity(viewModel.selectedMediaItem == nil ? 0.6 : 1.0)
+                }
+
+                Spacer()
+                    .frame(height: 120)
             }
+            .padding(.horizontal, 18)
         }
         .sheet(isPresented: $showFilePickerSheet) {
             filePickerModal

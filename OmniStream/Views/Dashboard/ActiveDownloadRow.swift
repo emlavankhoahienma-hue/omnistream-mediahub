@@ -99,7 +99,7 @@ public struct ActiveDownloadRow: View {
             }
         }
         .padding(14)
-        .liquidGlass(cornerRadius: 18, borderOpacity: 0.3)
+        .glassRow(cornerRadius: 18)
     }
 
     private func controlButton(icon: String, color: Color, action: @escaping () -> Void) -> some View {

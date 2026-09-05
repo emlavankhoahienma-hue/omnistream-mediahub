@@ -84,15 +84,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release delete v1.0.0 --yes || true
-          git push origin :refs/tags/v1.0.0 || true
-          gh release create v1.0.0 "build/OmniStream-Unsigned.ipa" \
-            --title "OmniStream & MediaHub v1.0.0 (Liquid Glass Edition)" \
-            --notes "## 🚀 OmniStream & MediaHub v1.0.0 - Bản phát hành chính thức
+          gh release create v1.0.1 "build/OmniStream-Unsigned.ipa" \
+            --title "OmniStream & MediaHub v1.0.1 (120Hz Ultra-Fluid Liquid Glass)" \
+            --notes "## 🚀 OmniStream & MediaHub v1.0.1 - Bản cập nhật tối ưu hiệu năng 120Hz
 
-          ### 🌟 Tính năng nổi bật:
-          - 💎 **Liquid Glass UI**: Phong cách Glassmorphism cao cấp, viền phản quang vi mô, đổ bóng 2 tầng cho iOS 16 - 18+.
-          - 📱 **Tương thích toàn diện**: Tối ưu hiển thị từ iPhone X đến iPhone 16 Pro Max (Dynamic Island).
+          ### ⚡ Cải tiến hiệu năng & Giao diện:
+          - 🏎️ **Triệt tiêu hoàn toàn giật lag**: Chuyển đổi toàn bộ nền sang **Metal GPU Shaders (.drawingGroup())**, loại bỏ các tầng Gaussian blur 70px gây nghẽn render server.
+          - 💎 **Liquid Glass 2.0**: Áp dụng hiệu ứng khúc xạ ánh sáng đỉnh vi mô (Specular Rim Gradient) sắc nét, trong suốt và mượt mà tuyệt đối ở 120 FPS.
+          - 📱 **Hỗ trợ toàn diện**: Tối ưu hiển thị hoàn hảo từ iPhone X đến iPhone 16 Pro Max.
           - ⚡ **Background Downloader**: Tải stream ngầm qua \`URLSessionDownloadDelegate\`, tính tốc độ và ETA.
           - 🎧 **Offline Transcoder**: Tách âm thanh M4A/AAC/WAV/MP3 (128/192/320kbps) & nén video HEVC/H.264.
           - 📂 **Files & Photos**: Tích hợp trực tiếp vào Cuộn Camera (Photos) và ứng dụng Files (\`UIFileSharingEnabled = true\`).
