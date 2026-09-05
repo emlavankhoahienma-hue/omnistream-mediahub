@@ -43,10 +43,9 @@ public struct DashboardView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
-        .onAppear {
-            viewModel.checkClipboardForURL()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+        .task {
+            // Chờ 0.5s sau khi giao diện đã sẵn sàng để đảm bảo tương tác chạm nhạy tức thì
+            try? await Task.sleep(nanoseconds: 500_000_000)
             viewModel.checkClipboardForURL()
         }
     }

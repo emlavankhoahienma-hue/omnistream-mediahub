@@ -25,17 +25,21 @@ public final class DashboardViewModel: ObservableObject {
     }
 
     // MARK: - Smart Clipboard Auto-Detection
-    /// Tự động phát hiện URL trong Clipboard khi người dùng mở ứng dụng
+    /// Tự động phát hiện URL trong Clipboard an toàn, hoàn toàn không làm nghẽn Main Thread
     public func checkClipboardForURL() {
-        guard UIPasteboard.general.hasStrings else { return }
-        guard let pasteboardString = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        Task.detached(priority: .utility) {
+            guard UIPasteboard.general.hasStrings else { return }
+            guard let pasteboardString = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
 
-        if MetadataExtractor.shared.isValidURL(pasteboardString) {
-            if pasteboardString != inputURL && pasteboardString != detectedClipboardURL {
-                withAnimation(.spring()) {
-                    self.detectedClipboardURL = pasteboardString
+            if MetadataExtractor.shared.isValidURL(pasteboardString) {
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
+                    if pasteboardString != self.inputURL && pasteboardString != self.detectedClipboardURL {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            self.detectedClipboardURL = pasteboardString
+                        }
+                    }
                 }
-                HapticFeedback.shared.touchLight()
             }
         }
     }

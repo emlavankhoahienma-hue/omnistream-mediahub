@@ -26,7 +26,6 @@ public final class PlayerViewModel: ObservableObject {
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay, .defaultToSpeaker])
-            try session.setActive(true)
         } catch {
             print("Audio Session error: \(error)")
         }
@@ -34,6 +33,7 @@ public final class PlayerViewModel: ObservableObject {
 
     // MARK: - Playback Control
     public func play(item: MediaItem) {
+        try? AVAudioSession.sharedInstance().setActive(true)
         if currentItem?.id == item.id && player != nil {
             player?.play()
             isPlaying = true
