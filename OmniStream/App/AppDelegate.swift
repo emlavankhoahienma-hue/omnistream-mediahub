@@ -1,0 +1,34 @@
+import UIKit
+import AVFoundation
+
+// MARK: - App Delegate
+/// Quản lý vòng đời cấp thấp của iOS, đặc biệt là background URLSession completion.
+
+public final class AppDelegate: NSObject, UIApplicationDelegate {
+    public func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        // Cấu hình ban đầu cho AVAudioSession
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, options: [.allowAirPlay, .defaultToSpeaker])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to activate AVAudioSession in AppDelegate: \(error)")
+        }
+        return true
+    }
+
+    /// Tiếp nhận sự kiện hoàn tất tải nền từ iOS khi ứng dụng đang bị suspend hoặc kill
+    public func application(
+        _ application: UIApplication,
+        handleEventsForBackgroundURLSession identifier: String,
+        completionHandler: @escaping () -> Void
+    ) {
+        if identifier == "com.omnistream.mediahub.background" {
+            DownloadManager.shared.backgroundCompletionHandler = completionHandler
+        } else {
+            completionHandler()
+        }
+    }
+}
