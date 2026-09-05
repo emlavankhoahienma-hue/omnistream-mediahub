@@ -7,6 +7,9 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build & Package Unsigned IPA
@@ -18,7 +21,23 @@ jobs:
 
       - name: Select Xcode Version
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.4.app || sudo xcode-select -s /Applications/Xcode.app
+          echo "Available Xcode installations:"
+          ls -d /Applications/Xcode* || true
+
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          elif [ -d "/Applications/Xcode_16.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.app
+          elif [ -d "/Applications/Xcode.app" ]; then
+            sudo xcode-select -s /Applications/Xcode.app
+          else
+            sudo xcode-select -s /Applications/Xcode_15.4.app
+          fi
+
           xcodebuild -version
 
       - name: Install XcodeGen
@@ -31,21 +50,23 @@ jobs:
 
       - name: Build App (Unsigned)
         run: |
-          xcodebuild clean archive \
+          xcodebuild build \
             -project OmniStream.xcodeproj \
             -scheme OmniStream \
+            -configuration Release \
             -destination "generic/platform=iOS" \
-            -archivePath "build/OmniStream.xcarchive" \
+            -derivedDataPath "build/DerivedData" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            ENABLE_BITCODE=NO \
-            SWIFT_COMPILATION_MODE=wholemodule
+            ENABLE_BITCODE=NO
 
       - name: Package Unsigned IPA for Sideload (TrollStore / AltStore / Scarlet)
         run: |
           mkdir -p build/Payload
-          cp -r "build/OmniStream.xcarchive/Products/Applications/OmniStream.app" build/Payload/
+          APP_PATH=$(find build/DerivedData/Build/Products -name "OmniStream.app" | head -n 1)
+          echo "Found app at: $APP_PATH"
+          cp -r "$APP_PATH" build/Payload/
           cd build
           zip -r "OmniStream-Unsigned.ipa" Payload
           ls -lh OmniStream-Unsigned.ipa
@@ -57,3 +78,26 @@ jobs:
           path: build/OmniStream-Unsigned.ipa
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete v1.0.0 --yes || true
+          git push origin :refs/tags/v1.0.0 || true
+          gh release create v1.0.0 "build/OmniStream-Unsigned.ipa" \
+            --title "OmniStream & MediaHub v1.0.0 (Liquid Glass Edition)" \
+            --notes "## 🚀 OmniStream & MediaHub v1.0.0 - Bản phát hành chính thức
+
+          ### 🌟 Tính năng nổi bật:
+          - 💎 **Liquid Glass UI**: Phong cách Glassmorphism cao cấp, viền phản quang vi mô, đổ bóng 2 tầng cho iOS 16 - 18+.
+          - 📱 **Tương thích toàn diện**: Tối ưu hiển thị từ iPhone X đến iPhone 16 Pro Max (Dynamic Island).
+          - ⚡ **Background Downloader**: Tải stream ngầm qua \`URLSessionDownloadDelegate\`, tính tốc độ và ETA.
+          - 🎧 **Offline Transcoder**: Tách âm thanh M4A/AAC/WAV/MP3 (128/192/320kbps) & nén video HEVC/H.264.
+          - 📂 **Files & Photos**: Tích hợp trực tiếp vào Cuộn Camera (Photos) và ứng dụng Files (\`UIFileSharingEnabled = true\`).
+
+          ### 📲 Hướng dẫn cài đặt Sideload:
+          - **TrollStore**: Tải file \`OmniStream-Unsigned.ipa\` đính kèm bên dưới và nhấn Cài đặt (Vĩnh viễn không thu hồi).
+          - **AltStore / SideStore**: Thêm file \`OmniStream-Unsigned.ipa\` để ký bằng Apple ID cá nhân.
+          - **Scarlet / Esign**: Cài đặt trực tiếp file \`OmniStream-Unsigned.ipa\` trên iPhone."

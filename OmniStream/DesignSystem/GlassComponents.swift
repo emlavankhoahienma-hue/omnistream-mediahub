@@ -27,6 +27,16 @@ public struct GlassCard<Content: View>: View {
 }
 
 // MARK: - Glass Button
+// MARK: - Glass Press Button Style
+public struct GlassPressButtonStyle: ButtonStyle {
+    public init() {}
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
+    }
+}
+
 public struct GlassButton: View {
     public enum Style {
         case frosted
@@ -38,8 +48,6 @@ public struct GlassButton: View {
     private let icon: String?
     private let style: Style
     private let action: () -> Void
-
-    @State private var isPressed = false
 
     public init(
         _ title: String,
@@ -74,16 +82,8 @@ public struct GlassButton: View {
             .overlay(overlayBorder)
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: shadowColor, radius: 10, x: 0, y: 5)
-            .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
         }
-        .buttonStyle(PlainButtonStyle())
-        ._onButtonGesture(
-            pressing: { pressing in
-                self.isPressed = pressing
-            },
-            perform: {}
-        )
+        .buttonStyle(GlassPressButtonStyle())
     }
 
     @ViewBuilder
