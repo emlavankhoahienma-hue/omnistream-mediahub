@@ -98,16 +98,18 @@ public final class PlayerViewModel: ObservableObject {
 
         let interval = CMTime(seconds: 0.25, preferredTimescale: 600)
         timeObserverToken = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
-            guard let self = self else { return }
-            let seconds = CMTimeGetSeconds(time)
-            if seconds.isFinite {
-                self.currentTime = seconds
-            }
+            Task { @MainActor [weak self] in
+                guard let self = self else { return }
+                let seconds = CMTimeGetSeconds(time)
+                if seconds.isFinite {
+                    self.currentTime = seconds
+                }
 
-            if let itemDuration = player.currentItem?.duration {
-                let d = CMTimeGetSeconds(itemDuration)
-                if d.isFinite && d > 0 {
-                    self.duration = d
+                if let itemDuration = self.player?.currentItem?.duration {
+                    let d = CMTimeGetSeconds(itemDuration)
+                    if d.isFinite && d > 0 {
+                        self.duration = d
+                    }
                 }
             }
         }

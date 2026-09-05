@@ -6,7 +6,7 @@ import SwiftUI
 /// Tích hợp MeshGradient native (iOS 18+) và Metal-rendered Fluid Aurora (iOS 16-17).
 
 public struct LiquidBackground: View {
-    @State private var phase: CGFloat = 0.0
+    @State private var phase: Float = 0.0
     @Environment(\.colorScheme) private var colorScheme
 
     public init() {}
@@ -51,7 +51,7 @@ public struct LiquidBackground: View {
             height: 3,
             points: [
                 [0.0, 0.0], [0.5, 0.0], [1.0, 0.0],
-                [0.0, 0.5], [0.35 + 0.15 * p, 0.45 + 0.1 * p], [1.0, 0.5],
+                [0.0, 0.5], [Float(0.35 + 0.15 * p), Float(0.45 + 0.1 * p)], [1.0, 0.5],
                 [0.0, 1.0], [0.5, 1.0], [1.0, 1.0]
             ],
             colors: [
