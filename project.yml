@@ -23,10 +23,10 @@ targets:
     sources:
       - path: OmniStream
     dependencies:
-      - framework: WebKit.framework
-      - framework: AVFoundation.framework
-      - framework: AVKit.framework
-      - framework: Photos.framework
+      - sdk: WebKit.framework
+      - sdk: AVFoundation.framework
+      - sdk: AVKit.framework
+      - sdk: Photos.framework
     info:
       path: OmniStream/App/Info.plist
       properties:
