@@ -55,8 +55,8 @@ public struct TagFilterBar: View {
                                 .font(.system(size: 13, weight: isSelected ? .bold : .medium))
                                 .foregroundColor(isSelected ? .white : .primary)
                                 .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
                         }
+                        .frame(height: 36)
                         .contentShape(Capsule())
                     }
                     .buttonStyle(PlainButtonStyle())

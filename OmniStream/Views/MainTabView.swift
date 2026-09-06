@@ -122,23 +122,23 @@ public struct MainTabView: View {
                                         )
                                         .allowsHitTesting(false)
                                 }
-                                .shadow(color: Color.cyan.opacity(0.4), radius: 8, x: 0, y: 2)
+                                .shadow(color: Color.cyan.opacity(0.35), radius: 6, x: 0, y: 2)
                                 .matchedGeometryEffect(id: "ACTIVE_TAB_PILL", in: tabNamespace)
                         }
 
-                        VStack(spacing: 4) {
+                        VStack(spacing: 3) {
                             Image(systemName: tab.icon)
-                                .font(.system(size: 20, weight: isSelected ? .bold : .medium))
+                                .font(.system(size: 19, weight: isSelected ? .bold : .medium))
                                 .foregroundColor(isSelected ? .white : .secondary.opacity(0.8))
-                                .scaleEffect(isSelected ? 1.08 : 1.0)
+                                .scaleEffect(isSelected ? 1.06 : 1.0)
 
                             Text(tab.title)
-                                .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                                .font(.system(size: 10.5, weight: isSelected ? .bold : .medium))
                                 .foregroundColor(isSelected ? .white : .secondary.opacity(0.8))
                         }
-                        .padding(.vertical, 8)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
+                    .frame(height: 50)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -146,6 +146,7 @@ public struct MainTabView: View {
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 4)
-        .liquidGlass(cornerRadius: 28, borderOpacity: 0.38, shadowRadius: 14, shadowY: 6)
+        .frame(height: 60)
+        .liquidGlass(cornerRadius: 30, borderOpacity: 0.38, shadowRadius: 12, shadowY: 4)
     }
 }

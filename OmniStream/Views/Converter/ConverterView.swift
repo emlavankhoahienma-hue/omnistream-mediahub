@@ -157,14 +157,15 @@ public struct ConverterView: View {
                         }
                         .font(.system(size: 14, weight: isSelected ? .bold : .medium))
                         .foregroundColor(isSelected ? .white : .primary)
-                        .padding(.vertical, 12)
                     }
                     .frame(maxWidth: .infinity)
+                    .frame(height: 44)
                     .contentShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .buttonStyle(PlainButtonStyle())
             }
         }
+        .frame(height: 46)
     }
 
     // MARK: - Source Media Card

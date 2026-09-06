@@ -84,16 +84,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.0.5 "build/OmniStream-Unsigned.ipa" \
-            --title "OmniStream & MediaHub v1.0.5 (Real Video Pipeline & In-App Web Media Sniffer)" \
-            --notes "## 🚀 OmniStream & MediaHub v1.0.5 - Cỗ Máy Tải Video Thật 100% & Trình Duyệt Bắt Link
+          gh release create v1.0.6 "build/OmniStream-Unsigned.ipa" \
+            --title "OmniStream & MediaHub v1.0.6 (Hotfix: Compact Liquid Glass Tab Bar & Sizing Fix)" \
+            --notes "## 🚀 OmniStream & MediaHub v1.0.6 - Sửa Lỗi Giao Diện Tab Bar To Chiếm Màn Hình
 
-          ### ⚡ Đột phá nâng cấp toàn diện:
-          - 🌐 **Trình Duyệt Bắt Link Đa Nền Tảng (In-App Media Web Browser Sniffer)**: Tích hợp trình duyệt WebKit Liquid Glass với engine JavaScript Sniffer tự động bắt luồng video gốc khi xem trên **YouTube, TikTok, Facebook, Instagram, Twitter, các trang phim/anime, bóng đá, v.v.** Nổi ngay nút 'TẢI VIDEO NGAY (.mp4)' kèm haptic vibration khi phát video.
-          - 🎬 **HLS Stream Downloader & Muxer (.m3u8)**: Tự động phân tích playlist m3u8, chọn luồng phân giải cao nhất, tải các phân mảnh (.ts) song song tốc độ cao và dùng AVAssetExportSession đóng gói lại thành file .mp4 chuẩn tương thích 100% với Photos / Camera Roll.
-          - 🛡️ **Anti-HTML Guard & Magic Byte Verification**: Kiểm tra mã nhận diện 512-byte nhị phân và HTTP MIME. Ngăn chặn triệt để tình trạng tải nhầm file HTML 50KB giả video, bảo vệ kho phương tiện luôn sạch và chơi được 100%.
-          - ⚡ **Hệ Thống Trích Xuất MediaStreamResolver**: Nhận diện thông minh OpenGraph video, HTML5 video tag và phân định chính xác giữa direct stream và trang web cần bắt luồng.
-          - 📲 **Hiển thị & Chuyển đổi .ts**: Hỗ trợ định dạng Transport Stream (.ts) trong Thư Viện Media và Bộ Chuyển Đổi Định Dạng.
+          ### ⚡ Sửa lỗi quan trọng (Hotfix):
+          - 🎯 **Khắc phục lỗi Tab Bar khổng lồ chiếm toàn màn hình**: Cố định kích thước chiều cao chuẩn 60pt cho thanh điều hướng Liquid Glass Tab Bar và 50pt cho viên nang kính lỏng chuyển động. Tab bar giờ đây nhỏ gọn, thanh thoát, nằm chuẩn xác ở đáy màn hình và không còn che khuất nội dung.
+          - 📏 **Chuẩn hóa kích thước các bộ chọn (Mode Selector & Tag Filter Bar)**: Thêm giới hạn chiều cao cố định cho các viên nang chọn chế độ (Transcode Studio) và thanh lọc danh mục (Kho Phương Tiện), ngăn ngừa hiện tượng co giãn không mong muốn trên các dòng iPhone có màn hình khác nhau.
+          - 🌐 **Duy trì đầy đủ tính năng v1.0.5**: Trình Duyệt Bắt Link Đa Nền Tảng (YouTube/TikTok/Facebook), Tải & Ghép Luồng HLS .m3u8 sang .mp4, và Hàng rào Anti-HTML Guard.
 
           ### 📲 Hướng dẫn cài đặt Sideload:
           - **TrollStore**: Tải file \`OmniStream-Unsigned.ipa\` đính kèm bên dưới và nhấn Cài đặt (Vĩnh viễn không thu hồi).
