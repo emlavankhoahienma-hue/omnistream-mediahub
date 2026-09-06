@@ -11,10 +11,8 @@ public struct MediaItemRow: View {
     public let onDelete: () -> Void
 
     public var body: some View {
-        Button(action: {
-            HapticFeedback.shared.touchSoft()
-            onPlay()
-        }) {
+        HStack(spacing: 12) {
+            // Media Icon & Info (Vùng bấm phát phương tiện)
             HStack(spacing: 12) {
                 // Media Icon / Thumbnail
                 ZStack {
@@ -24,6 +22,7 @@ public struct MediaItemRow: View {
                         .overlay {
                             RoundedRectangle(cornerRadius: 14)
                                 .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                .allowsHitTesting(false)
                         }
 
                     Image(systemName: item.mediaType.systemIcon)
@@ -69,50 +68,62 @@ public struct MediaItemRow: View {
                         }
                     }
                 }
-
-                Spacer()
-
-                // Nút Menu Tác Vụ & Yêu thích
-                HStack(spacing: 8) {
-                    Button(action: onToggleFavorite) {
-                        Image(systemName: item.tags.contains("favorite") ? "star.fill" : "star")
-                            .font(.system(size: 16))
-                            .foregroundColor(item.tags.contains("favorite") ? .orange : .secondary.opacity(0.5))
-                    }
-
-                    Menu {
-                        if item.mediaType == .video {
-                            Button(action: onSaveToPhotos) {
-                                Label("Lưu vào Photos (Cuộn Camera)", systemImage: "photo.badge.plus")
-                            }
-                        }
-
-                        Button(action: onShare) {
-                            Label("Chia sẻ / AirDrop", systemImage: "square.and.arrow.up")
-                        }
-
-                        Button(action: onRename) {
-                            Label("Đổi tên tệp", systemImage: "pencil")
-                        }
-
-                        Divider()
-
-                        Button(role: .destructive, action: onDelete) {
-                            Label("Xóa khỏi thiết bị", systemImage: "trash")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(.secondary)
-                            .frame(width: 28, height: 28)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                    }
-                }
             }
-            .padding(12)
-            .glassRow(cornerRadius: 16)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                HapticFeedback.shared.touchSoft()
+                onPlay()
+            }
+
+            Spacer()
+
+            // Nút Menu Tác Vụ & Yêu thích (Độc lập, không lồng nút)
+            HStack(spacing: 8) {
+                Button(action: {
+                    HapticFeedback.shared.touchLight()
+                    onToggleFavorite()
+                }) {
+                    Image(systemName: item.tags.contains("favorite") ? "star.fill" : "star")
+                        .font(.system(size: 16))
+                        .foregroundColor(item.tags.contains("favorite") ? .orange : .secondary.opacity(0.5))
+                        .frame(width: 32, height: 32)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PlainButtonStyle())
+
+                Menu {
+                    if item.mediaType == .video {
+                        Button(action: onSaveToPhotos) {
+                            Label("Lưu vào Photos (Cuộn Camera)", systemImage: "photo.badge.plus")
+                        }
+                    }
+
+                    Button(action: onShare) {
+                        Label("Chia sẻ / AirDrop", systemImage: "square.and.arrow.up")
+                    }
+
+                    Button(action: onRename) {
+                        Label("Đổi tên tệp", systemImage: "pencil")
+                    }
+
+                    Divider()
+
+                    Button(role: .destructive, action: onDelete) {
+                        Label("Xóa khỏi thiết bị", systemImage: "trash")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundColor(.secondary)
+                        .frame(width: 28, height: 28)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(12)
+        .glassRow(cornerRadius: 16)
     }
 }

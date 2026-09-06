@@ -5,7 +5,6 @@ import Combine
 @MainActor
 public final class DashboardViewModel: ObservableObject {
     @Published public var inputURL: String = ""
-    @Published public var detectedClipboardURL: String? = nil
     @Published public var isAnalyzingURL: Bool = false
     @Published public var previewMetadata: URLMetadataPreview? = nil
     @Published public var showPreviewSheet: Bool = false
@@ -24,41 +23,18 @@ public final class DashboardViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // MARK: - Smart Clipboard Auto-Detection
-    /// Tự động phát hiện URL trong Clipboard an toàn, hoàn toàn không làm nghẽn Main Thread
-    public func checkClipboardForURL() {
-        Task.detached(priority: .utility) {
-            guard UIPasteboard.general.hasStrings else { return }
-            guard let pasteboardString = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
-
-            if MetadataExtractor.shared.isValidURL(pasteboardString) {
-                await MainActor.run { [weak self] in
-                    guard let self = self else { return }
-                    if pasteboardString != self.inputURL && pasteboardString != self.detectedClipboardURL {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                            self.detectedClipboardURL = pasteboardString
-                        }
-                    }
-                }
-            }
+    // MARK: - Safe User-Triggered Clipboard Paste
+    /// Dán URL từ Clipboard an toàn khi người dùng bấm nút Dán (chạy trên MainActor, hoàn toàn không nghẽn hệ thống)
+    public func pasteFromClipboard() {
+        guard UIPasteboard.general.hasStrings,
+              let pasteboardString = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !pasteboardString.isEmpty else {
+            return
         }
-    }
 
-    /// Chấp nhận URL từ Clipboard
-    public func acceptClipboardURL() {
-        guard let url = detectedClipboardURL else { return }
-        self.inputURL = url
-        self.detectedClipboardURL = nil
+        self.inputURL = pasteboardString
         HapticFeedback.shared.touchMedium()
         analyzeCurrentURL()
-    }
-
-    /// Từ chối/bỏ qua URL Clipboard
-    public func dismissClipboardURL() {
-        withAnimation(.easeOut(duration: 0.2)) {
-            self.detectedClipboardURL = nil
-        }
-        HapticFeedback.shared.touchLight()
     }
 
     // MARK: - URL Analysis & Preview

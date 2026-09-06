@@ -44,6 +44,7 @@ public struct LiquidGlassModifier: ViewModifier {
                             endPoint: .bottom
                         )
                     )
+                    .allowsHitTesting(false)
             }
             .overlay {
                 // Viền sáng phản quang vi mô (Micro Specular Rim)
@@ -61,6 +62,7 @@ public struct LiquidGlassModifier: ViewModifier {
                         ),
                         lineWidth: 1.0
                     )
+                    .allowsHitTesting(false)
             }
             .shadow(
                 color: Color.black.opacity(colorScheme == .dark ? 0.22 : 0.06),
@@ -100,6 +102,7 @@ public struct GlassRowModifier: ViewModifier {
                         ),
                         lineWidth: 0.8
                     )
+                    .allowsHitTesting(false)
             }
             .shadow(
                 color: Color.black.opacity(colorScheme == .dark ? 0.15 : 0.04),
@@ -139,6 +142,7 @@ public struct GlassCapsuleModifier: ViewModifier {
                         ),
                         lineWidth: 0.8
                     )
+                    .allowsHitTesting(false)
             }
             .shadow(
                 color: Color.black.opacity(colorScheme == .dark ? 0.12 : 0.03),

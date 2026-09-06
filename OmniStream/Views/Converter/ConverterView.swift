@@ -117,8 +117,11 @@ public struct ConverterView: View {
                     .overlay {
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(Color.white.opacity(viewModel.selectedMode == mode ? 0.3 : 0.15), lineWidth: 1)
+                            .allowsHitTesting(false)
                     }
+                    .contentShape(RoundedRectangle(cornerRadius: 14))
                 }
+                .buttonStyle(PlainButtonStyle())
             }
         }
     }
@@ -169,7 +172,9 @@ public struct ConverterView: View {
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                                 .glassCapsule(borderOpacity: 0.25)
+                                .contentShape(Capsule())
                         }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 } else {
                     Button(action: {
@@ -193,7 +198,9 @@ public struct ConverterView: View {
                                 .foregroundColor(.secondary)
                         }
                         .padding(.vertical, 8)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
         }

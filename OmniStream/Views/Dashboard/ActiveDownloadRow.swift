@@ -113,8 +113,10 @@ public struct ActiveDownloadRow: View {
                 .frame(width: 28, height: 28)
                 .background(.ultraThinMaterial)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 1))
+                .overlay(Circle().stroke(Color.white.opacity(0.2), lineWidth: 1).allowsHitTesting(false))
+                .contentShape(Circle())
         }
+        .buttonStyle(PlainButtonStyle())
     }
 
     private var statusIconName: String {

@@ -88,7 +88,9 @@ public struct MainTabView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal, 8)

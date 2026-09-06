@@ -79,8 +79,9 @@ public struct GlassButton: View {
             .padding(.vertical, 14)
             .padding(.horizontal, 18)
             .background(backgroundView)
-            .overlay(overlayBorder)
+            .overlay(overlayBorder.allowsHitTesting(false))
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: shadowColor, radius: 10, x: 0, y: 5)
         }
         .buttonStyle(GlassPressButtonStyle())
@@ -193,20 +194,29 @@ public struct GlassTextField: View {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.secondary.opacity(0.7))
                         .font(.system(size: 16))
+                        .frame(width: 24, height: 24)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(PlainButtonStyle())
             } else if let onPasteAction = onPasteAction {
                 Button(action: {
                     HapticFeedback.shared.touchLight()
                     onPasteAction()
                 }) {
-                    Text("Dán")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
+                    HStack(spacing: 4) {
+                        Image(systemName: "doc.on.clipboard")
+                            .font(.system(size: 11, weight: .bold))
+                        Text("Dán")
+                            .font(.system(size: 12, weight: .bold))
+                    }
+                    .foregroundColor(.cyan)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .contentShape(Capsule())
                 }
+                .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal, 16)
@@ -224,6 +234,7 @@ public struct GlassTextField: View {
                         : LinearGradient(colors: [.white.opacity(0.3), .white.opacity(0.08)], startPoint: .topLeading, endPoint: .bottomTrailing),
                     lineWidth: isFocused ? 1.5 : 1.0
                 )
+                .allowsHitTesting(false)
         }
         .shadow(color: isFocused ? Color.blue.opacity(0.2) : Color.black.opacity(0.06), radius: 8, x: 0, y: 3)
         .animation(.easeInOut(duration: 0.2), value: isFocused)
@@ -267,9 +278,12 @@ public struct GlassCapsuleTag: View {
                             isSelected ? Color.white.opacity(0.3) : Color.white.opacity(0.2),
                             lineWidth: 1
                         )
+                        .allowsHitTesting(false)
                 }
+                .contentShape(Capsule())
                 .shadow(color: isSelected ? Color.blue.opacity(0.3) : Color.clear, radius: 6, x: 0, y: 3)
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

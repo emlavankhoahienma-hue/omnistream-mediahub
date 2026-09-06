@@ -25,6 +25,7 @@ public struct DashboardView: View {
             }
             .padding(.horizontal, 18)
         }
+        .scrollDismissesKeyboard(.interactively)
         .sheet(isPresented: $viewModel.showPreviewSheet) {
             if let preview = viewModel.previewMetadata {
                 URLPreviewModal(
@@ -42,11 +43,6 @@ public struct DashboardView: View {
             Button("Đóng", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage ?? "")
-        }
-        .task {
-            // Chờ 0.5s sau khi giao diện đã sẵn sàng để đảm bảo tương tác chạm nhạy tức thì
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            viewModel.checkClipboardForURL()
         }
     }
 
