@@ -5,6 +5,7 @@ public struct ConverterView: View {
     @StateObject private var viewModel = ConverterViewModel()
     @State private var showFilePickerSheet = false
     @State private var availableItems: [MediaItem] = []
+    @Namespace private var modeNamespace
 
     public init() {}
 
@@ -21,18 +22,29 @@ public struct ConverterView: View {
                 // Media Source Selection Card
                 sourceMediaCard
 
-                // Configuration Card
-                if viewModel.selectedMode == .audio {
-                    AudioExtractionCard(
-                        selectedFormat: $viewModel.selectedAudioFormat,
-                        selectedBitrate: $viewModel.selectedAudioBitrate
-                    )
-                } else {
-                    VideoCompressionCard(
-                        selectedCodec: $viewModel.selectedVideoCodec,
-                        selectedQuality: $viewModel.selectedVideoQuality
-                    )
+                // Configuration Card with Fluid Transition
+                ZStack {
+                    if viewModel.selectedMode == .audio {
+                        AudioExtractionCard(
+                            selectedFormat: $viewModel.selectedAudioFormat,
+                            selectedBitrate: $viewModel.selectedAudioBitrate
+                        )
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .offset(y: 10)),
+                            removal: .opacity
+                        ))
+                    } else {
+                        VideoCompressionCard(
+                            selectedCodec: $viewModel.selectedVideoCodec,
+                            selectedQuality: $viewModel.selectedVideoQuality
+                        )
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .offset(y: 10)),
+                            removal: .opacity
+                        ))
+                    }
                 }
+                .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.selectedMode)
 
                 // Tiến trình đang xử lý
                 if viewModel.isTranscoding {
@@ -89,36 +101,65 @@ public struct ConverterView: View {
         }
     }
 
-    // MARK: - Mode Selector
+    // MARK: - Mode Selector with Sliding Liquid Glass Pill
     private var modeSelector: some View {
         HStack(spacing: 8) {
             ForEach(ConverterMode.allCases) { mode in
+                let isSelected = viewModel.selectedMode == mode
                 Button(action: {
                     HapticFeedback.shared.touchSoft()
-                    viewModel.selectedMode = mode
+                    withAnimation(.spring(response: 0.36, dampingFraction: 0.72)) {
+                        viewModel.selectedMode = mode
+                    }
                 }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: mode.icon)
-                        Text(mode.rawValue)
-                    }
-                    .font(.system(size: 14, weight: viewModel.selectedMode == mode ? .bold : .medium))
-                    .foregroundColor(viewModel.selectedMode == mode ? .white : .primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background {
-                        if viewModel.selectedMode == mode {
-                            RoundedRectangle(cornerRadius: 14)
-                                .fill(LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    ZStack {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.purple.opacity(0.85), Color.blue.opacity(0.85)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .strokeBorder(
+                                            LinearGradient(
+                                                stops: [
+                                                    .init(color: .white.opacity(0.65), location: 0.0),
+                                                    .init(color: .cyan.opacity(0.4), location: 0.5),
+                                                    .init(color: .white.opacity(0.12), location: 1.0)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1.0
+                                        )
+                                        .allowsHitTesting(false)
+                                }
+                                .shadow(color: Color.purple.opacity(0.4), radius: 8, x: 0, y: 3)
+                                .matchedGeometryEffect(id: "CONVERTER_MODE_PILL", in: modeNamespace)
                         } else {
-                            RoundedRectangle(cornerRadius: 14)
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
                                 .fill(.ultraThinMaterial)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                        .allowsHitTesting(false)
+                                }
                         }
+
+                        HStack(spacing: 6) {
+                            Image(systemName: mode.icon)
+                                .scaleEffect(isSelected ? 1.08 : 1.0)
+                            Text(mode.rawValue)
+                        }
+                        .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                        .foregroundColor(isSelected ? .white : .primary)
+                        .padding(.vertical, 12)
                     }
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.white.opacity(viewModel.selectedMode == mode ? 0.3 : 0.15), lineWidth: 1)
-                            .allowsHitTesting(false)
-                    }
+                    .frame(maxWidth: .infinity)
                     .contentShape(RoundedRectangle(cornerRadius: 14))
                 }
                 .buttonStyle(PlainButtonStyle())

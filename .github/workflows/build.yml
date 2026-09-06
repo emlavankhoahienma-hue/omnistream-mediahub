@@ -84,16 +84,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.0.3 "build/OmniStream-Unsigned.ipa" \
-            --title "OmniStream & MediaHub v1.0.3 (Instant Touch & 120 FPS Metal Edition)" \
-            --notes "## 🚀 OmniStream & MediaHub v1.0.3 - Khắc phục triệt để đơ lag khi vào app
+          gh release create v1.0.4 "build/OmniStream-Unsigned.ipa" \
+            --title "OmniStream & MediaHub v1.0.4 (Liquid Glass Transitions & Fluid UI Edition)" \
+            --notes "## 🚀 OmniStream & MediaHub v1.0.4 - Hiệu ứng chuyển đổi chức năng Liquid Glass
 
           ### ⚡ Cải tiến đột phá:
-          - 🏎️ **Chạm bấm tức thì 0ms latency**: Loại bỏ hoàn toàn việc đọc clipboard ngầm lúc khởi động app (vốn gây XPC deadlock với pasteboardd). Thao tác dán link chuyển về nút bấm chủ động, an toàn và nhạy tuyệt đối.
-          - 💎 **Liquid Background Metal 0% CPU**: Tái cấu trúc nền gradient quang học đa tầng gia tốc trực tiếp qua GPU Metal. Loại bỏ hoàn toàn vòng lặp animation nặng nề và blendMode gây quá tải GPU/CPU.
-          - 🎯 **Nâng cấp độ nhạy nút bấm toàn app**: Bổ sung \`contentShape(Rectangle())\` và \`PlainButtonStyle()\` cho toàn bộ Tab Bar, ô nhập URL, nút dán và danh sách tác vụ. Chạm bất kỳ đâu trên nút đều ăn lệnh ngay lập tức.
-          - 🛡️ **Non-blocking Overlays**: Bổ sung \`allowsHitTesting(false)\` cho tất cả các lớp viền phản quang và khúc xạ trên LiquidGlass, loại bỏ hoàn toàn việc lớp phủ đồ họa chặn cảm ứng.
-          - 🧩 **Tách biệt nút bấm trong Thư viện**: Tách biệt hoàn toàn vùng bấm phát media và nút Menu / Sao, loại bỏ xung đột cử chỉ.
+          - 🌊 **Sliding Liquid Glass Tab Bar**: Bổ sung viên nang kính lỏng phát quang quang học trượt mượt mà theo tab được chọn với spring physics (\`matchedGeometryEffect\`). Biểu tượng tab phóng to tinh tế khi chọn.
+          - 🎭 **Fluid View Transitions**: Chuyển đổi mượt mà giữa các chức năng (Tải Xuống, Chuyển Đổi, Thư Viện) dạng cross-dissolve kết hợp co giãn nhẹ, không còn giật khựng.
+          - 🎛️ **Converter Fluid Mode Switcher**: Bộ chọn chế độ Tách Âm Thanh / Nén Video với viên nang kính tím-xanh trượt biến hình mềm mại và hiệu ứng trượt mờ cho thẻ cấu hình.
+          - 🏷️ **Fluid Tag Filter Bar**: Viên nang kính xanh ngọc trôi mượt mà dưới nhãn danh mục đang chọn trong Kho Phương Tiện.
+          - 🏎️ **Hiệu năng 120 FPS ProMotion**: Toàn bộ hiệu ứng được xử lý 100% bằng GPU Metal và SwiftUI declarative engine, 0% CPU overhead.
 
           ### 📲 Hướng dẫn cài đặt Sideload:
           - **TrollStore**: Tải file \`OmniStream-Unsigned.ipa\` đính kèm bên dưới và nhấn Cài đặt (Vĩnh viễn không thu hồi).
