@@ -11,6 +11,10 @@ public final class DashboardViewModel: ObservableObject {
     @Published public var errorMessage: String? = nil
     @Published public var showErrorAlert: Bool = false
 
+    // Trình duyệt bắt link media
+    @Published public var showWebBrowser: Bool = false
+    @Published public var webBrowserInitialURL: URL? = nil
+
     public let downloadManager = DownloadManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -24,7 +28,6 @@ public final class DashboardViewModel: ObservableObject {
     }
 
     // MARK: - Safe User-Triggered Clipboard Paste
-    /// Dán URL từ Clipboard an toàn khi người dùng bấm nút Dán (chạy trên MainActor, hoàn toàn không nghẽn hệ thống)
     public func pasteFromClipboard() {
         guard UIPasteboard.general.hasStrings,
               let pasteboardString = UIPasteboard.general.string?.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -69,6 +72,27 @@ public final class DashboardViewModel: ObservableObject {
         self.inputURL = ""
         self.previewMetadata = nil
         HapticFeedback.shared.notifySuccess()
+    }
+
+    public func openWebBrowserForCurrentPreview() {
+        guard let preview = previewMetadata else { return }
+        self.showPreviewSheet = false
+        openWebBrowser(with: preview.url)
+    }
+
+    public func openWebBrowser(with url: URL? = nil) {
+        if let target = url {
+            self.webBrowserInitialURL = target
+        } else {
+            let trimmed = inputURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let valid = URL(string: trimmed), MetadataExtractor.shared.isValidURL(trimmed) {
+                self.webBrowserInitialURL = valid
+            } else {
+                self.webBrowserInitialURL = URL(string: "https://m.youtube.com")
+            }
+        }
+        self.showWebBrowser = true
+        HapticFeedback.shared.touchMedium()
     }
 
     public func directDownload() {

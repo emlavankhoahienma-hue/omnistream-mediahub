@@ -62,7 +62,7 @@ public final class DownloadManager: NSObject, ObservableObject {
     }
 
     // MARK: - Public API
-    /// Bắt đầu một tiến trình tải mới
+    /// Bắt đầu một tiến trình tải mới (hỗ trợ cả Direct Media và HLS .m3u8 Streams)
     @discardableResult
     public func startDownload(from url: URL, title: String? = nil) -> UUID {
         let id = UUID()
@@ -74,11 +74,53 @@ public final class DownloadManager: NSObject, ObservableObject {
             status: .connecting
         )
 
-        let downloadTask = urlSession.downloadTask(with: url)
-        item.taskIdentifier = downloadTask.taskIdentifier
-
         activeTasks[id] = item
         downloadOrder.insert(id, at: 0)
+
+        // Kiểm tra xem có phải luồng HLS .m3u8 không
+        let isHLS = url.pathExtension.lowercased() == "m3u8" || url.absoluteString.contains(".m3u8")
+        if isHLS {
+            Task {
+                do {
+                    let savedURL = try await HLSDownloader.shared.download(
+                        from: url,
+                        title: item.title,
+                        taskID: id
+                    ) { [weak self] progress, bytesWritten, speed, eta in
+                        DispatchQueue.main.async {
+                            guard let self = self, var current = self.activeTasks[id] else { return }
+                            current.bytesWritten = bytesWritten
+                            current.progress = progress
+                            current.speedBytesPerSecond = speed
+                            current.etaSeconds = eta
+                            current.status = .downloading(progress: progress, speed: speed, eta: eta)
+                            self.activeTasks[id] = current
+                        }
+                    }
+
+                    DispatchQueue.main.async {
+                        guard var current = self.activeTasks[id] else { return }
+                        current.progress = 1.0
+                        current.status = .completed(destinationURL: savedURL)
+                        self.activeTasks[id] = current
+                        HapticFeedback.shared.notifySuccess()
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        guard var current = self.activeTasks[id] else { return }
+                        current.status = .failed(error: error.localizedDescription)
+                        self.activeTasks[id] = current
+                        HapticFeedback.shared.notifyError()
+                    }
+                }
+            }
+            HapticFeedback.shared.touchMedium()
+            return id
+        }
+
+        // Tải thông thường qua Background URLSession
+        let downloadTask = urlSession.downloadTask(with: url)
+        item.taskIdentifier = downloadTask.taskIdentifier
         sessionTasks[downloadTask.taskIdentifier] = id
         downloadTasks[id] = downloadTask
         speedTrackers[id] = SpeedTracker()
@@ -130,6 +172,7 @@ public final class DownloadManager: NSObject, ObservableObject {
 
     /// Hủy tác vụ tải
     public func cancelDownload(id: UUID) {
+        HLSDownloader.shared.cancel(id: id)
         if let task = downloadTasks[id] {
             task.cancel()
             downloadTasks.removeValue(forKey: id)
@@ -198,11 +241,50 @@ extension DownloadManager: URLSessionDownloadDelegate {
     ) {
         guard let id = sessionTasks[downloadTask.taskIdentifier], var item = activeTasks[id] else { return }
 
+        // 1. Kiểm tra Content-Type từ máy chủ
+        if let httpResponse = downloadTask.response as? HTTPURLResponse {
+            let mime = httpResponse.mimeType?.lowercased() ?? ""
+            if mime.contains("text/html") {
+                try? FileManager.default.removeItem(at: location)
+                item.status = .failed(error: "Nguồn tải về là trang web HTML (chưa giải mã luồng video). Hãy dùng 'Trình Duyệt Bắt Link' để tải video thật.")
+                activeTasks[id] = item
+                HapticFeedback.shared.notifyError()
+                downloadTasks.removeValue(forKey: id)
+                return
+            }
+        }
+
+        // 2. Kiểm tra Magic Bytes đầu tệp để chặn HTML trá hình
+        if let fileHandle = try? FileHandle(forReadingFrom: location) {
+            let headerData = fileHandle.readData(ofLength: 512)
+            try? fileHandle.close()
+
+            let headerString = String(decoding: headerData, as: UTF8.self).lowercased()
+            if headerString.contains("<!doctype html") ||
+               headerString.contains("<html") ||
+               headerString.contains("<head") ||
+               headerString.contains("<body") {
+                try? FileManager.default.removeItem(at: location)
+                item.status = .failed(error: "Nguồn tải là trang HTML (chưa giải mã luồng video). Hãy mở 'Trình Duyệt Bắt Link' để tải video.")
+                activeTasks[id] = item
+                HapticFeedback.shared.notifyError()
+                downloadTasks.removeValue(forKey: id)
+                return
+            }
+        }
+
+        // 3. Đảm bảo tên tệp có phần mở rộng video/audio hợp lệ
+        var finalFilename = item.title
+        let currentExt = (finalFilename as NSString).pathExtension.lowercased()
+        if currentExt.isEmpty || currentExt == "html" || currentExt == "htm" {
+            finalFilename = (finalFilename as NSString).deletingPathExtension + ".mp4"
+        }
+
         do {
             // Lưu tệp vào thư mục Downloads của Documents Sandbox
             let savedURL = try StorageManager.shared.saveDownloadedFile(
                 from: location,
-                suggestedFilename: item.title
+                suggestedFilename: finalFilename
             )
 
             item.progress = 1.0

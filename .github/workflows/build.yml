@@ -84,16 +84,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.0.4 "build/OmniStream-Unsigned.ipa" \
-            --title "OmniStream & MediaHub v1.0.4 (Liquid Glass Transitions & Fluid UI Edition)" \
-            --notes "## 🚀 OmniStream & MediaHub v1.0.4 - Hiệu ứng chuyển đổi chức năng Liquid Glass
+          gh release create v1.0.5 "build/OmniStream-Unsigned.ipa" \
+            --title "OmniStream & MediaHub v1.0.5 (Real Video Pipeline & In-App Web Media Sniffer)" \
+            --notes "## 🚀 OmniStream & MediaHub v1.0.5 - Cỗ Máy Tải Video Thật 100% & Trình Duyệt Bắt Link
 
-          ### ⚡ Cải tiến đột phá:
-          - 🌊 **Sliding Liquid Glass Tab Bar**: Bổ sung viên nang kính lỏng phát quang quang học trượt mượt mà theo tab được chọn với spring physics (\`matchedGeometryEffect\`). Biểu tượng tab phóng to tinh tế khi chọn.
-          - 🎭 **Fluid View Transitions**: Chuyển đổi mượt mà giữa các chức năng (Tải Xuống, Chuyển Đổi, Thư Viện) dạng cross-dissolve kết hợp co giãn nhẹ, không còn giật khựng.
-          - 🎛️ **Converter Fluid Mode Switcher**: Bộ chọn chế độ Tách Âm Thanh / Nén Video với viên nang kính tím-xanh trượt biến hình mềm mại và hiệu ứng trượt mờ cho thẻ cấu hình.
-          - 🏷️ **Fluid Tag Filter Bar**: Viên nang kính xanh ngọc trôi mượt mà dưới nhãn danh mục đang chọn trong Kho Phương Tiện.
-          - 🏎️ **Hiệu năng 120 FPS ProMotion**: Toàn bộ hiệu ứng được xử lý 100% bằng GPU Metal và SwiftUI declarative engine, 0% CPU overhead.
+          ### ⚡ Đột phá nâng cấp toàn diện:
+          - 🌐 **Trình Duyệt Bắt Link Đa Nền Tảng (In-App Media Web Browser Sniffer)**: Tích hợp trình duyệt WebKit Liquid Glass với engine JavaScript Sniffer tự động bắt luồng video gốc khi xem trên **YouTube, TikTok, Facebook, Instagram, Twitter, các trang phim/anime, bóng đá, v.v.** Nổi ngay nút 'TẢI VIDEO NGAY (.mp4)' kèm haptic vibration khi phát video.
+          - 🎬 **HLS Stream Downloader & Muxer (.m3u8)**: Tự động phân tích playlist m3u8, chọn luồng phân giải cao nhất, tải các phân mảnh (.ts) song song tốc độ cao và dùng AVAssetExportSession đóng gói lại thành file .mp4 chuẩn tương thích 100% với Photos / Camera Roll.
+          - 🛡️ **Anti-HTML Guard & Magic Byte Verification**: Kiểm tra mã nhận diện 512-byte nhị phân và HTTP MIME. Ngăn chặn triệt để tình trạng tải nhầm file HTML 50KB giả video, bảo vệ kho phương tiện luôn sạch và chơi được 100%.
+          - ⚡ **Hệ Thống Trích Xuất MediaStreamResolver**: Nhận diện thông minh OpenGraph video, HTML5 video tag và phân định chính xác giữa direct stream và trang web cần bắt luồng.
+          - 📲 **Hiển thị & Chuyển đổi .ts**: Hỗ trợ định dạng Transport Stream (.ts) trong Thư Viện Media và Bộ Chuyển Đổi Định Dạng.
 
           ### 📲 Hướng dẫn cài đặt Sideload:
           - **TrollStore**: Tải file \`OmniStream-Unsigned.ipa\` đính kèm bên dưới và nhấn Cài đặt (Vĩnh viễn không thu hồi).

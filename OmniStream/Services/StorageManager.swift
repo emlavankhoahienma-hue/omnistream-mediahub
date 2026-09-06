@@ -95,7 +95,7 @@ public final class StorageManager: ObservableObject {
 
                 let ext = fileURL.pathExtension.lowercased()
                 let mediaType: MediaType
-                if ["mp4", "mov", "m4v", "mkv", "webm"].contains(ext) {
+                if ["mp4", "mov", "m4v", "mkv", "webm", "ts"].contains(ext) {
                     mediaType = .video
                 } else if ["mp3", "m4a", "wav", "aac", "flac", "caf"].contains(ext) {
                     mediaType = .audio

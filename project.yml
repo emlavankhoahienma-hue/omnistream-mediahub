@@ -22,12 +22,17 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: OmniStream
+    dependencies:
+      - framework: WebKit.framework
+      - framework: AVFoundation.framework
+      - framework: AVKit.framework
+      - framework: Photos.framework
     info:
       path: OmniStream/App/Info.plist
       properties:
         CFBundleDisplayName: "OmniStream"
-        CFBundleShortVersionString: "1.0.4"
-        CFBundleVersion: "5"
+        CFBundleShortVersionString: "1.0.5"
+        CFBundleVersion: "6"
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

@@ -16,19 +16,19 @@ public struct URLInputCardView: View {
                 }
             )
 
-            // Nút bấm phân tích & tải xuống
-            HStack(spacing: 12) {
-                if viewModel.isAnalyzingURL {
-                    HStack(spacing: 8) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .blue))
-                        Text("Đang phân tích link...")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                } else {
+            // Nút bấm phân tích & Trình duyệt bắt link
+            if viewModel.isAnalyzingURL {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    Text("Đang phân tích luồng video...")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            } else {
+                VStack(spacing: 10) {
                     GlassButton(
                         "Phân Tích & Tải",
                         icon: "sparkles",
@@ -38,6 +38,14 @@ public struct URLInputCardView: View {
                     }
                     .disabled(viewModel.inputURL.trimmingCharacters(in: .whitespaces).isEmpty)
                     .opacity(viewModel.inputURL.trimmingCharacters(in: .whitespaces).isEmpty ? 0.6 : 1.0)
+
+                    GlassButton(
+                        "Trình Duyệt Bắt Link Video",
+                        icon: "globe.americas.fill",
+                        style: .frosted
+                    ) {
+                        viewModel.openWebBrowser()
+                    }
                 }
             }
         }

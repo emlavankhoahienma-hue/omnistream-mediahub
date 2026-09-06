@@ -4,6 +4,7 @@ import SwiftUI
 public struct URLPreviewModal: View {
     public let preview: URLMetadataPreview
     public let onConfirm: () -> Void
+    public let onOpenBrowser: () -> Void
     public let onDismiss: () -> Void
 
     public var body: some View {
@@ -19,9 +20,9 @@ public struct URLPreviewModal: View {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Xác Nhận Tải Xuống")
+                        Text(preview.requiresBrowserSniffer ? "Nền Tảng Cần Bắt Luồng" : "Xác Nhận Tải Xuống")
                             .font(.system(size: 20, weight: .bold))
-                        Text("Kiểm tra thông tin trước khi bắt đầu pipeline")
+                        Text(preview.requiresBrowserSniffer ? "Phát hiện trang web mã hoá hoặc bảo vệ luồng" : "Kiểm tra thông tin tệp trước khi tải xuống")
                             .font(.system(size: 13))
                             .foregroundColor(.secondary)
                     }
@@ -35,10 +36,16 @@ public struct URLPreviewModal: View {
                         HStack(spacing: 14) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 14)
-                                    .fill(LinearGradient(colors: [.blue, .cyan], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                    .fill(
+                                        LinearGradient(
+                                            colors: preview.requiresBrowserSniffer ? [.purple, .blue] : [.blue, .cyan],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
                                     .frame(width: 54, height: 54)
 
-                                Image(systemName: preview.isDirectMedia ? "film.fill" : "globe")
+                                Image(systemName: preview.isDirectMedia ? "film.fill" : (preview.isHLS ? "antenna.radiowaves.left.and.right" : "globe"))
                                     .font(.system(size: 24))
                                     .foregroundColor(.white)
                             }
@@ -54,7 +61,7 @@ public struct URLPreviewModal: View {
                                         .foregroundColor(.white)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)
-                                        .background(Color.blue)
+                                        .background(preview.requiresBrowserSniffer ? Color.purple : Color.blue)
                                         .clipShape(Capsule())
 
                                     Text(preview.formattedSize)
@@ -67,7 +74,22 @@ public struct URLPreviewModal: View {
                         Divider()
                             .background(Color.white.opacity(0.15))
 
-                        VStack(alignment: .leading, spacing: 8) {
+                        if let reason = preview.snifferReason {
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: "info.circle.fill")
+                                    .foregroundColor(.cyan)
+                                    .font(.system(size: 14))
+
+                                Text(reason)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.primary.opacity(0.85))
+                            }
+                            .padding(10)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
                             Label("Nguồn URL:", systemImage: "link")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.secondary)
@@ -75,7 +97,7 @@ public struct URLPreviewModal: View {
                             Text(preview.url.absoluteString)
                                 .font(.system(size: 12, design: .monospaced))
                                 .foregroundColor(.primary.opacity(0.85))
-                                .lineLimit(3)
+                                .lineLimit(2)
                         }
                     }
                 }
@@ -85,8 +107,18 @@ public struct URLPreviewModal: View {
 
                 // Nút hành động
                 VStack(spacing: 12) {
-                    GlassButton("Bắt Đầu Tải Xuống", icon: "arrow.down.circle.fill", style: .vibrantGradient) {
-                        onConfirm()
+                    if preview.requiresBrowserSniffer {
+                        GlassButton("Mở Trình Duyệt Bắt Link (Khuyên Dùng)", icon: "globe.badge.chevron.backward", style: .vibrantGradient) {
+                            onOpenBrowser()
+                        }
+
+                        GlassButton("Thử Tải Trực Tiếp", icon: "arrow.down.circle", style: .frosted) {
+                            onConfirm()
+                        }
+                    } else {
+                        GlassButton("Bắt Đầu Tải Xuống", icon: "arrow.down.circle.fill", style: .vibrantGradient) {
+                            onConfirm()
+                        }
                     }
 
                     GlassButton("Hủy Bỏ", style: .frosted) {

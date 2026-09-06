@@ -33,11 +33,17 @@ public struct DashboardView: View {
                     onConfirm: {
                         viewModel.confirmAndStartDownload()
                     },
+                    onOpenBrowser: {
+                        viewModel.openWebBrowserForCurrentPreview()
+                    },
                     onDismiss: {
                         viewModel.showPreviewSheet = false
                     }
                 )
             }
+        }
+        .fullScreenCover(isPresented: $viewModel.showWebBrowser) {
+            WebMediaBrowserView(initialURL: viewModel.webBrowserInitialURL)
         }
         .alert("Thông Báo", isPresented: $viewModel.showErrorAlert) {
             Button("Đóng", role: .cancel) {}
